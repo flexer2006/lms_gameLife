@@ -17,7 +17,6 @@ type LifeStates struct {
 	logger *zap.Logger
 }
 
-// New creates a new HTTP handler with routing and middleware
 func New(lifeService *service.GameService, logger *zap.Logger) (http.Handler, error) {
 	serveMux := http.NewServeMux()
 
@@ -27,6 +26,8 @@ func New(lifeService *service.GameService, logger *zap.Logger) (http.Handler, er
 	}
 
 	serveMux.HandleFunc("/next-state", lifeState.nextState)
+	serveMux.HandleFunc("/setstate", lifeState.setState)
+	serveMux.HandleFunc("/reset", lifeState.resetState) // Новый маршрут
 
 	return serveMux, nil
 }

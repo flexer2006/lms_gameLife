@@ -11,7 +11,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// createHandler creates a new HTTP handler with routing and middleware
 func createHandler(_ context.Context, logger *zap.Logger, lifeService *service.GameService) (http.Handler, error) {
 	muxHandler, err := handlers.New(lifeService, logger)
 	if err != nil {
@@ -24,9 +23,7 @@ func createHandler(_ context.Context, logger *zap.Logger, lifeService *service.G
 	return muxHandler, nil
 }
 
-// Run starts the HTTP server
 func Run(ctx context.Context, logger *zap.Logger) (func(context.Context) error, error) {
-
 	lifeService := service.NewGameService()
 
 	muxHandler, err := createHandler(ctx, logger, lifeService)
@@ -51,7 +48,6 @@ func Run(ctx context.Context, logger *zap.Logger) (func(context.Context) error, 
 	}, nil
 }
 
-// loggingMiddleware creates middleware for logging HTTP requests
 func loggingMiddleware(logger *zap.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
