@@ -13,8 +13,6 @@ import (
 )
 
 type Config struct {
-	Width  int
-	Height int
 }
 
 type Application struct {

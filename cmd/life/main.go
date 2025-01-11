@@ -9,7 +9,7 @@ import (
 
 func main() {
 	ctx := context.Background()
-	cfg := application.Config{Width: 100, Height: 100}
+	cfg := application.Config{}
 	app := application.New(cfg)
 	os.Exit(app.Run(ctx))
 }
