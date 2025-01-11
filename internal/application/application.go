@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 
@@ -27,10 +28,14 @@ func New(config Config) *Application {
 }
 
 func (a *Application) Run(ctx context.Context) int {
-
 	logger, err := setupLogger()
 	if err != nil {
-		fmt.Printf("Ошибка настройки логгера: %v\n", err)
+		log.Printf("Ошибка настройки логгера: %v\n", err)
+		return 1
+	}
+
+	if logger == nil {
+		log.Println("Logger is nil")
 		return 1
 	}
 
@@ -57,14 +62,16 @@ func (a *Application) Run(ctx context.Context) int {
 }
 
 func setupLogger() (*zap.Logger, error) {
-
 	config := zap.NewProductionConfig()
-
 	config.Level = zap.NewAtomicLevelAt(zapcore.InfoLevel)
 
 	logger, err := config.Build()
 	if err != nil {
 		return nil, err
+	}
+
+	if logger == nil {
+		return nil, fmt.Errorf("logger is nil")
 	}
 
 	return logger, nil
