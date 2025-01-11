@@ -1,24 +1,24 @@
 package life
 
-import (
-	"bytes"
-	"log"
-)
+import "github.com/flexer2006/lms_gameLife/pkg/random"
 
 type GameOfLife struct {
-	grid [][]bool
+	grid    [][]bool
+	newGrid [][]bool
 }
 
 // NewGameOfLife creates a new game with the specified grid size
 func NewGameOfLife(rows, cols int) *GameOfLife {
 	grid := make([][]bool, rows)
+	newGrid := make([][]bool, rows)
 	for i := range grid {
 		grid[i] = make([]bool, cols)
+		newGrid[i] = make([]bool, cols)
 	}
-	return &GameOfLife{grid: grid}
+	return &GameOfLife{grid: grid, newGrid: newGrid}
 }
 
-// SetGrid sets the initial grid with a pattern
+// SetGrid sets the initial state of the grid
 func (g *GameOfLife) SetGrid(pattern [][]bool) {
 	rows := len(pattern)
 	cols := len(pattern[0])
@@ -29,28 +29,24 @@ func (g *GameOfLife) SetGrid(pattern [][]bool) {
 	}
 }
 
-// Step performs one step of the game
+// Step performs step of the game
 func (g *GameOfLife) Step() {
 	rows := len(g.grid)
 	cols := len(g.grid[0])
-	newGrid := make([][]bool, rows)
-
-	for i := range newGrid {
-		newGrid[i] = make([]bool, cols)
-	}
 
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
 			liveNeighbors := g.countLiveNeighbors(i, j)
 			if g.grid[i][j] {
-				newGrid[i][j] = liveNeighbors == 2 || liveNeighbors == 3
+				g.newGrid[i][j] = liveNeighbors == 2 || liveNeighbors == 3
 			} else {
-				newGrid[i][j] = liveNeighbors == 3
+				g.newGrid[i][j] = liveNeighbors == 3
 			}
 		}
 	}
 
-	g.grid = newGrid
+	// Swap grids
+	g.grid, g.newGrid = g.newGrid, g.grid
 }
 
 // countLiveNeighbors counts the number of live neighbors for a cell
@@ -80,35 +76,10 @@ func (g *GameOfLife) GetGrid() [][]bool {
 	return g.grid
 }
 
-// String returns a string representation of the grid
-func (g *GameOfLife) String() string {
-	var buffer bytes.Buffer
-	for _, row := range g.grid {
-		for _, cell := range row {
-			if cell {
-				buffer.WriteString("1 ")
-			} else {
-				buffer.WriteString("0 ")
-			}
-		}
-		buffer.WriteString("\n")
-	}
-	return buffer.String()
-}
-
-// Reset resets the game to the initial state
-func (g *GameOfLife) Reset() {
-	for i := range g.grid {
-		for j := range g.grid[i] {
-			g.grid[i][j] = false
-		}
-	}
-}
-
-// Run performs several steps of the game
-func (g *GameOfLife) Run(steps int) {
-	for i := 0; i < steps; i++ {
-		log.Printf("Step %d\n%s", i+1, g)
-		g.Step()
-	}
+// SetRandomState sets a random initial state of the grid
+func (g *GameOfLife) SetRandomState() {
+	rows := len(g.grid)
+	cols := len(g.grid[0])
+	randomGrid := random.GenerateRandomGrid(rows, cols)
+	g.SetGrid(randomGrid)
 }
