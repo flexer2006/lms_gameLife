@@ -30,7 +30,7 @@ func New(config Config) *Application {
 func (a *Application) Run(ctx context.Context) int {
 	logger, err := setupLogger()
 	if err != nil {
-		log.Printf("Ошибка настройки логгера: %v\n", err)
+		log.Printf("Logger setup error: %v\n", err)
 		return 1
 	}
 
@@ -39,9 +39,9 @@ func (a *Application) Run(ctx context.Context) int {
 		return 1
 	}
 
-	shutDownFunc, err := server.Run(ctx, logger, a.Cfg.Height, a.Cfg.Width)
+	shutDownFunc, err := server.Run(ctx, logger)
 	if err != nil {
-		logger.Error("Ошибка запуска сервера", zap.Error(err))
+		logger.Error("Server startup error", zap.Error(err))
 		return 1
 	}
 
@@ -54,7 +54,7 @@ func (a *Application) Run(ctx context.Context) int {
 	<-c
 
 	if err := shutDownFunc(ctx); err != nil {
-		logger.Error("Ошибка завершения работы сервера", zap.Error(err))
+		logger.Error("Server termination error", zap.Error(err))
 		return 1
 	}
 

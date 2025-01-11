@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -16,22 +15,24 @@ import (
 func createHandler(_ context.Context, logger *zap.Logger, lifeService *service.GameService) (http.Handler, error) {
 	muxHandler, err := handlers.New(lifeService, logger)
 	if err != nil {
-		return nil, fmt.Errorf("ошибка инициализации обработчика: %w", err)
+		logger.Error("handler initialization error", zap.Error(err))
+		return nil, err
 	}
-	// Middleware для обработчиков
+
 	muxHandler = handlers.Decorate(muxHandler, loggingMiddleware(logger))
 
 	return muxHandler, nil
 }
 
-// Run starts HTTP server with specified parameters
-func Run(ctx context.Context, logger *zap.Logger, height, width int) (func(context.Context) error, error) {
+// Run starts the HTTP server
+func Run(ctx context.Context, logger *zap.Logger) (func(context.Context) error, error) {
 
-	lifeService := service.NewGameService(height, width)
+	lifeService := service.NewGameService()
 
 	muxHandler, err := createHandler(ctx, logger, lifeService)
 	if err != nil {
-		return nil, fmt.Errorf("ошибка создания маршрутизатора: %w", err)
+		logger.Error("router creation error", zap.Error(err))
+		return nil, err
 	}
 
 	srv := &http.Server{
@@ -40,9 +41,8 @@ func Run(ctx context.Context, logger *zap.Logger, height, width int) (func(conte
 	}
 
 	go func() {
-
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Error("ошибка ListenAndServe", zap.Error(err))
+			logger.Error("ListenAndServe error", zap.Error(err))
 		}
 	}()
 
@@ -60,10 +60,10 @@ func loggingMiddleware(logger *zap.Logger) func(next http.Handler) http.Handler 
 			next.ServeHTTP(w, r)
 
 			duration := time.Since(start)
-			logger.Info("HTTP запрос",
-				zap.String("метод", r.Method),
-				zap.String("путь", r.URL.Path),
-				zap.Duration("длительность", duration),
+			logger.Info("HTTP request",
+				zap.String("method", r.Method),
+				zap.String("path", r.URL.Path),
+				zap.Duration("duration", duration),
 			)
 		})
 	}

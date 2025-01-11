@@ -2,18 +2,20 @@ package service
 
 import (
 	"github.com/flexer2006/lms_gameLife/pkg/life"
+	"github.com/flexer2006/lms_gameLife/pkg/random"
 )
 
 type GameService struct {
 	game *life.GameOfLife
 }
 
-// NewGameService creates a new game service with the specified grid size
-func NewGameService(rows, cols int) *GameService {
+// NewGameService Creates a new game service with a random grid size
+func NewGameService() *GameService {
+	rows, cols := random.GenerateRandomSize(50, 255)
 	service := &GameService{
 		game: life.NewGameOfLife(rows, cols),
 	}
-	service.game.SetRandomState() // Устанавливаем случайное начальное состояние
+	service.game.SetRandomState()
 	return service
 }
 

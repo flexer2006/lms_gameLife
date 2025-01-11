@@ -5,7 +5,15 @@ import (
 	"time"
 )
 
-// GenerateRandomGrid generates a random grid with the given dimensions
+// GenerateRandomSize generates random grid sizes in the specified range
+func GenerateRandomSize(min, max int) (int, int) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	rows := r.Intn(max-min+1) + min
+	cols := r.Intn(max-min+1) + min
+	return rows, cols
+}
+
+// GenerateRandomGrid generates a random grid with the specified dimensions
 func GenerateRandomGrid(rows, cols int) [][]bool {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	grid := make([][]bool, rows)

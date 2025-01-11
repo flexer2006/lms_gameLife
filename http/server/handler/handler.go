@@ -47,10 +47,10 @@ func (ls *LifeStates) nextState(w http.ResponseWriter, _ *http.Request) {
 
 	err := json.NewEncoder(w).Encode(worldState)
 	if err != nil {
-		ls.logger.Error("Ошибка кодирования состояния игры", zap.Error(err))
+		ls.logger.Error("Game state coding error", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	ls.logger.Info("Состояние игры успешно отправлено")
+	ls.logger.Info("Game status successfully submitted")
 }
