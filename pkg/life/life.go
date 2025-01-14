@@ -29,23 +29,26 @@ func (g *GameOfLife) SetGrid(pattern [][]bool) {
 	}
 }
 
-// Step performs step of the game
+// Step performs a step of the game
 func (g *GameOfLife) Step() {
 	rows := len(g.grid)
 	cols := len(g.grid[0])
 
+	// Loop through each cell in the grid to determine its next state
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
 			liveNeighbors := g.countLiveNeighbors(i, j)
 			if g.grid[i][j] {
+				// Any live cell with 2 or 3 live neighbors survives
 				g.newGrid[i][j] = liveNeighbors == 2 || liveNeighbors == 3
 			} else {
+				// Any dead cell with exactly 3 live neighbors becomes alive
 				g.newGrid[i][j] = liveNeighbors == 3
 			}
 		}
 	}
 
-	// Swap grids
+	// Swap grids after the step to update the grid state
 	g.grid, g.newGrid = g.newGrid, g.grid
 }
 
@@ -62,6 +65,7 @@ func (g *GameOfLife) countLiveNeighbors(row, col int) int {
 			}
 			r := row + i
 			c := col + j
+
 			if r >= 0 && r < rows && c >= 0 && c < cols && g.grid[r][c] {
 				count++
 			}

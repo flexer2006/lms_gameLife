@@ -27,7 +27,7 @@ func New(lifeService *service.GameService, logger *zap.Logger) (http.Handler, er
 
 	serveMux.HandleFunc("/next-state", lifeState.nextState)
 	serveMux.HandleFunc("/setstate", lifeState.setState)
-	serveMux.HandleFunc("/reset", lifeState.resetState) // Новый маршрут
+	serveMux.HandleFunc("/reset", lifeState.resetState)
 
 	return serveMux, nil
 }
